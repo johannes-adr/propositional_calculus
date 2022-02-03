@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body style="display: flex; padding: 5px; margin: 0">
+
+</body>
+
+<script>
+    const remap = {
+        "!": "¬",
+        "V": "∨",
+        "^": "∧",
+        "&": "∧",
+        "|": "v",
+        "=": "↔",
+        ">": "→",
+        "F": "⊥",
+        "T": "T",
+        "\"": "≡",
+    }
+    let table = document.createElement("table");
+    table.innerHTML = `<tr><th>key</th><th>val</th></tr>`
+    for (let key in remap) {
+        table.innerHTML += `<tr><td>${key}</td><td>${remap[key]}</td></tr>`
+    }
+    document.body.appendChild(table)
+
+    function insertAtCursor(myField, myValue) {
+        //IE support
+        if (document.selection) {
+            myField.focus();
+            sel = document.selection.createRange();
+            sel.text = myValue;
+        }
+        //MOZILLA and others
+        else if (myField.selectionStart || myField.selectionStart == '0') {
+            var startPos = myField.selectionStart;
+            var endPos = myField.selectionEnd;
+            myField.value = myField.value.substring(0, startPos) +
+                myValue +
+                myField.value.substring(endPos, myField.value.length);
+            myField.selectionStart = startPos + myValue.length;
+            myField.selectionEnd = startPos + myValue.length;
+        } else {
+            myField.value += myValue;
+        }
+    }
+    let inputs = document.createElement("div")
+    document.body.appendChild(inputs);
+
+    function createField() {
+        let div = document.createElement("div")
+        let input = document.createElement("input")
+        input.style.width = "calc(100vw - 110px)"
+        div.appendChild(input)
+        input.addEventListener("keypress", (e) => {
+            let k = e.key.toUpperCase();
+            if (k in remap) {
+                k = remap[k]
+            }
+            insertAtCursor(input, k)
+            e.preventDefault()
+        })
+        let add = document.createElement("button")
+        add.innerHTML = "+";
+        div.appendChild(add)
+        add.onclick = createField
+        div.appendChild(document.createElement("br"))
+
+        inputs.appendChild(div)
+    }
+
+    createField()
+</script>
+
+</html>
